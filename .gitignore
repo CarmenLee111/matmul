@@ -1,0 +1,6 @@
+*.txt
+matmul
+test
+test*
+test.c
+test*.c
