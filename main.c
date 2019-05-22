@@ -44,11 +44,12 @@ int main(int argc, char *argv[]) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);    
 
 
-  d[0] = 0; d[1] = 0;
+  d[0] = (int) sqrt((float)size); d[1] = (int) sqrt((float) size);
   periods[0] = 1; periods[1] = 1;
   
    /* Dimensions of the processors */
-  MPI_Dims_create(size, 2, d);                                      
+  //MPI_Dims_create(size, 2, d);    /* did not work with n=9...*/   
+  //printf("Dimension of PEs: (%d, %d)\n", d[0], d[1]);                                   
   
   if (rank == 0) {
     /* Usage */
@@ -58,7 +59,7 @@ int main(int argc, char *argv[]) {
     } 
 
     /* Check if the processors are a square of an integer */ 
-    if (d[0] != d[1]){
+    if (sqrt((float)size) != (int) sqrt((float) size)){
         printf("Square root of p must be an integer\n");
         return -1;
     }
