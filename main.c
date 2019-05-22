@@ -80,12 +80,11 @@ int main(int argc, char *argv[]) {
     // print_matrix(B, n);
 
     // printf("Dimensions of the processors: %d, %d\n", d[0], d[1]);
+    C = (int *) malloc(n*n*sizeof(int));
   }
   
   
   starttime = MPI_Wtime();  
-
-  C = (int *) malloc(n*n*sizeof(int));
 
   /* -------------------- data to local matrix  --------------- */
   MPI_Bcast(&chunk, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -198,8 +197,8 @@ int main(int argc, char *argv[]) {
   if (rank == 0 ) {
     free(A);
     free(B);
+    free(C);
   }
-  free(C);
 
   MPI_Finalize();                  /* Shut down and clean up MPI */
 
