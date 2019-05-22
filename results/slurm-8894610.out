@@ -1,0 +1,33 @@
+Number of cores 4
+input file name: input3600.txt
+20.904376
+Number of cores 4
+input file name: input3600.txt
+19.997806
+Number of cores 4
+input file name: input3600.txt
+20.814333
+Number of cores 4
+input file name: input5716.txt
+176.065250
+Number of cores 4
+input file name: input5716.txt
+175.837354
+Number of cores 4
+input file name: input5716.txt
+178.673358
+Number of cores 4
+input file name: input7488.txt
+528.129299
+Number of cores 4
+input file name: input7488.txt
+511.299046
+Number of cores 4
+input file name: input7488.txt
+509.820500
+Number of cores 4
+input file name: input9072.txt
+1131.965043
+Number of cores 4
+input file name: input9072.txt
+slurmstepd: error: *** JOB 8894610 ON r330 CANCELLED AT 2019-05-22T22:59:50 DUE TO TIME LIMIT ***
