@@ -27,7 +27,7 @@ do
     do
         echo Number of cores $c
         echo input file name: $f
-        LD_PRELOAD=$VALGRIND_MPI_WRAPPER mpirun -np $c ./$executable $path$f outputfile.txt
+        mpirun -np $c ./$executable $path$f outputfile.txt
     done
 done
 
