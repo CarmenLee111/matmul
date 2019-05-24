@@ -76,8 +76,8 @@ int main(int argc, char *argv[]) {
     /* chunk size of the matrix in each process */
     chunk = n/d[0];
 
-    print_matrix(A, n);
-    print_matrix(B, n);
+    // print_matrix(A, n);
+    // print_matrix(B, n);
 
     // printf("Dimensions of the processors: %d, %d\n", d[0], d[1]);
     C = (double *) malloc(n*n*sizeof(double));
