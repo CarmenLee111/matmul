@@ -47,10 +47,6 @@ int main(int argc, char *argv[]) {
   d[0] = (int) sqrt((float)size); d[1] = (int) sqrt((float) size);
   periods[0] = 1; periods[1] = 1;
   
-  /* Dimensions of the processors */
-  //MPI_Dims_create(size, 2, d);    /* did not work with n=9...*/   
-  //printf("Dimension of PEs: (%d, %d)\n", d[0], d[1]);                                   
-  
   if (rank == 0) {
     /* Usage */
     if (argc != 3) {
@@ -76,10 +72,7 @@ int main(int argc, char *argv[]) {
     /* chunk size of the matrix in each process */
     chunk = n/d[0];
 
-    // print_matrix(A, n);
-    // print_matrix(B, n);
-
-    // printf("Dimensions of the processors: %d, %d\n", d[0], d[1]);
+	/* Allocate memory for the resulting matrix */
     C = (double *) malloc(n*n*sizeof(double));
   }
   
@@ -109,26 +102,12 @@ int main(int argc, char *argv[]) {
           displs[i*d[1]+j] = i*n*chunk + j*chunk;
       }
   }
-//   for (i=0; i<d[0]*d[1]; i++){
-//       printf("%d ", counts[i]);
-//   }
-//   printf("\n");
-
-//   for (i=0; i<d[0]*d[1]; i++){
-//       printf("%d ", displs[i]);
-//   }
-//   printf("\n");
 
   /* Scatter A and B to the processors */
   MPI_Scatterv(A, counts, displs, matrix, a, chunk*chunk, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   MPI_Scatterv(B, counts, displs, matrix, b, chunk*chunk, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   MPI_Barrier(MPI_COMM_WORLD);
   
-  /* print and inspect */
-  // printf("Rank %d has: \n", rank);
-  // print_matrix(a, chunk);
-  // print_matrix(b, chunk);
-
   /* ------------ Processor topology and alignment -------------- */    
   /* Create the Cartesian communicators */
   MPI_Cart_create(MPI_COMM_WORLD, 2, d, periods, 1, &comm_cart); 
@@ -136,12 +115,10 @@ int main(int argc, char *argv[]) {
   /* Get the Cartesian rank and coordinates */
   MPI_Comm_rank(comm_cart, &rank_cart);
   MPI_Cart_coords(comm_cart, rank_cart, 2, coord);
-  // printf("Rank %d has Cart rank %d and coordinates; (%d, %d)\n", rank, rank_cart, coord[0], coord[1]);
 
   /* Get local ranks of the adjacent PEs for the shifting */
   MPI_Cart_shift(comm_cart, 1, -1, &right, &left);   /* dir=1, j varies, row shift, E or W */
   MPI_Cart_shift(comm_cart, 0, -1, &down,  &up);
-  // printf("Rank %d has horizontal neighbors: (%d, %d), vertical nbs: (%d, %d)\n", rank, left, right, up, down);
 
   
   /* Alignment */
@@ -151,33 +128,20 @@ int main(int argc, char *argv[]) {
   MPI_Cart_shift(comm_cart, 0, -coord[1], &alignsrc, &aligndes);  /* N or S based on j */
   MPI_Sendrecv_replace(b, chunk*chunk, MPI_DOUBLE, aligndes, 11, alignsrc, 11, comm_cart, &status);
 
-  /* print and inspect */
-  // printf("Rank %d has a and b: \n", rank);
-  // print_matrix(a, chunk);
-  // print_matrix(b, chunk);
   MPI_Barrier(MPI_COMM_WORLD); 
 
   mmultiply(a, b, c, chunk);
-  // printf("Rank %d has c: \n", rank); 
-  // print_matrix(c, chunk);
 
   /* shift and compute */
   for (i=0; i<d[0]-1; i++) {
       MPI_Sendrecv_replace(a, chunk*chunk, MPI_DOUBLE, left, 11, right, 11, comm_cart, &status);
       MPI_Sendrecv_replace(b, chunk*chunk, MPI_DOUBLE, up, 11, down, 11, comm_cart, &status);
       mmultiply(a, b, c, chunk);
-    //   printf("Rank %d has c: \n", rank); 
-    //   print_matrix(c, chunk);
    }
 
   /* Gather C from the processors to master */
   MPI_Gatherv(c, chunk*chunk, MPI_DOUBLE, C, counts, displs, matrix, 0, MPI_COMM_WORLD);
   MPI_Barrier(MPI_COMM_WORLD);
-
-  /* Inspect the result */
-  // if (rank==0) {
-    //  print_matrix(C, n);
-  // }
 
   t = MPI_Wtime() - starttime;
 
@@ -202,7 +166,6 @@ int main(int argc, char *argv[]) {
   }
 
   MPI_Finalize();                  /* Shut down and clean up MPI */
-
   return 0;
 }
 
