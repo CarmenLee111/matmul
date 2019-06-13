@@ -1,8 +1,6 @@
 #!/bin/bash -l
 
 #SBATCH -A g2019005
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=carmen.jing.lee@gmail.com
 #SBATCH -p node -N 2 -n 25
 #SBATCH -t 10:00
 
